@@ -388,17 +388,17 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         var i = items.indexOf(t);
         if (i >= 0) {
           var value = this._indexToValue(i);
-          this._itemActivate(value, t);
+          this._itemActivate(value, t, e.detail.sourceEvent.metaKey, e.detail.sourceEvent.shiftKey);
           return;
         }
         t = t.parentNode;
       }
     },
 
-    _itemActivate: function(value, item) {
+    _itemActivate: function(value, item, metaKey, shiftKey) {
       if (!this.fire('iron-activate',
-          {selected: value, item: item}, {cancelable: true}).defaultPrevented) {
-        this.select(value);
+          {selected: value, item: item, metaKey: metaKey, shiftKey: shiftKey}, {cancelable: true}).defaultPrevented) {
+        this.select(value, metaKey, shiftKey);
       }
     }
 

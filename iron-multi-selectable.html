@@ -27,7 +27,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         observer: 'multiChanged'
       },
 
-      /**
+	  /**
+	   * If true, multiple selections occurs when shift or command/ctrl key is pressed.
+	   */
+	  toggleShift: {
+	  	type: Boolean,
+	  	value: false
+	  },
+
+	  /**
        * Gets or sets the selected elements. This is used instead of `selected` when `multi`
        * is true.
        */
@@ -64,9 +72,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
      * @method select
      * @param {string|number} value the value to select.
      */
-    select: function(value) {
+    select: function(value, metaKey, shiftKey) {
       if (this.multi) {
-        this._toggleSelected(value);
+        this._toggleSelected(value, metaKey, shiftKey);
       } else {
         this.selected = value;
       }
@@ -143,14 +151,28 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
     },
 
-    _toggleSelected: function(value) {
+    _toggleSelected: function(value, metaKey, shiftKey) {
       var i = this.selectedValues.indexOf(value);
       var unselected = i < 0;
-      if (unselected) {
-        this.push('selectedValues',value);
-      } else {
-        this.splice('selectedValues',i,1);
-      }
+
+      if (this.toggleShift && !metaKey && !(shiftKey && (value === this.latestSelection))) {
+      	if (shiftKey && this.latestSelection>=0) {
+      		//Extend latest selection
+			const firstValue = Math.min(value, this.latestSelection) + (this.latestSelection<value ? 1 : 0)
+			this.push('selectedValues',...Array.from({length: Math.abs(value - this.latestSelection)}, (v, k) => k + firstValue))
+		} else {
+			this.splice('selectedValues',0,this.selectedValues.length);
+			this.push('selectedValues',value);
+		}
+	  } else {
+		  if (unselected) {
+			  this.push('selectedValues',value);
+		  } else {
+			  this.splice('selectedValues',i,1);
+		  }
+	  }
+
+	  this.latestSelection = value
     },
 
     _valuesToItems: function(values) {
