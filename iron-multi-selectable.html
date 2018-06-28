@@ -151,29 +151,29 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
     },
 
-    _toggleSelected: function(value, metaKey, shiftKey) {
-      var i = this.selectedValues.indexOf(value);
-      var unselected = i < 0;
+      _toggleSelected: function(value, metaKey, shiftKey) {
+          var i = this.selectedValues.indexOf(value);
+          var unselected = i < 0;
+          const idx = this._valueToIndex(value)
+          if (this.toggleShift && !metaKey && !(shiftKey && (idx === this.latestSelection))) {
+              if (shiftKey && (this.latestSelection || this.latestSelection === 0)) {
+                  //Extend latest selection
+                  const firstValue = Math.min(idx, this.latestSelection) + (this.latestSelection<idx ? 1 : 0)
+                  this.push('selectedValues',...(Array.from({length: Math.abs(idx - this.latestSelection)}, (v, k) => k + firstValue).map(x=>this._indexToValue(x))))
+              } else {
+                  this.splice('selectedValues',0,this.selectedValues.length);
+                  this.push('selectedValues',value);
+              }
+          } else {
+              if (unselected) {
+                  this.push('selectedValues',value);
+              } else {
+                  this.splice('selectedValues',i,1);
+              }
+          }
 
-      if (this.toggleShift && !metaKey && !(shiftKey && (value === this.latestSelection))) {
-      	if (shiftKey && this.latestSelection>=0) {
-      		//Extend latest selection
-			const firstValue = Math.min(value, this.latestSelection) + (this.latestSelection<value ? 1 : 0)
-			this.push('selectedValues',...Array.from({length: Math.abs(value - this.latestSelection)}, (v, k) => k + firstValue))
-		} else {
-			this.splice('selectedValues',0,this.selectedValues.length);
-			this.push('selectedValues',value);
-		}
-	  } else {
-		  if (unselected) {
-			  this.push('selectedValues',value);
-		  } else {
-			  this.splice('selectedValues',i,1);
-		  }
-	  }
-
-	  this.latestSelection = value
-    },
+          this.latestSelection = idx
+      },
 
     _valuesToItems: function(values) {
       return (values == null) ? null : values.map(function(value) {
