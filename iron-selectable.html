@@ -391,7 +391,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         var i = items.indexOf(t);
         if (i >= 0) {
           var value = this._indexToValue(i);
-          this._itemActivate(value, t, e.detail.sourceEvent.metaKey, e.detail.sourceEvent.shiftKey);
+          this._itemActivate(value, t, navigator.platform.startsWith("Win") ? e.detail.sourceEvent.ctrlKey : e.detail.sourceEvent.metaKey, e.detail.sourceEvent.shiftKey);
           return;
         }
         t = t.parentNode;
