@@ -7,10 +7,10 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git://github.com/PolymerElements/iron-selector.git"
+    "url": "git://github.com/taktik/iron-selector.git"
   },
-  "homepage": "https://github.com/PolymerElements/iron-selector",
-  "name": "@polymer/iron-selector",
+  "homepage": "https://github.com/taktik/iron-selector",
+  "name": "@taktik/iron-selector",
   "license": "BSD-3-Clause",
   "devDependencies": {
     "webmat": "^0.2.0",
