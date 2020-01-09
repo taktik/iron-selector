@@ -179,8 +179,10 @@ export const IronSelectableBehavior = {
    *
    * @method select
    * @param {string|number} value the value to select.
+   * @param {boolean} metaKey is meta key pressed
+   * @param {boolean} shiftKey is shift key pressed
    */
-  select: function(value) {
+  select: function(value, metaKey, shiftKey) {
     this.selected = value;
   },
 
@@ -389,19 +391,19 @@ export const IronSelectableBehavior = {
       var i = items.indexOf(t);
       if (i >= 0) {
         var value = this._indexToValue(i);
-        this._itemActivate(value, t);
+        this._itemActivate(value, t, navigator.platform.startsWith("Win") ? e.detail.sourceEvent.ctrlKey : e.detail.sourceEvent.metaKey, e.detail.sourceEvent.shiftKey);
         return;
       }
       t = t.parentNode;
     }
   },
 
-  _itemActivate: function(value, item) {
-    if (!this.fire('iron-activate', {selected: value, item: item}, {
+  _itemActivate: function(value, item, metaKey, shiftKey) {
+    if (!this.fire('iron-activate', {selected: value, item: item, metaKey: metaKey, shiftKey: shiftKey}, {
                cancelable: true
              })
              .defaultPrevented) {
-      this.select(value);
+      this.select(value, metaKey, shiftKey);
     }
   }
 

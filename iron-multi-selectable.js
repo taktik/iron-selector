@@ -47,6 +47,13 @@ export const IronMultiSelectableBehaviorImpl = {
       }
     },
 
+    /**
+     * If true, multiple selections occurs when shift or command/ctrl key is pressed.
+     */
+    toggleShift: {
+      type: Boolean,
+      value: false
+    },
   },
 
   observers: ['_updateSelected(selectedValues.splices)'],
@@ -58,10 +65,12 @@ export const IronMultiSelectableBehaviorImpl = {
    *
    * @method select
    * @param {string|number} value the value to select.
+   * @param {boolean} metaKey is meta key pressed
+   * @param {boolean} shiftKey is shift key pressed
    */
-  select: function(value) {
+  select: function(value, metaKey, shiftKey) {
     if (this.multi) {
-      this._toggleSelected(value);
+      this._toggleSelected(value, metaKey, shiftKey);
     } else {
       this.selected = value;
     }
@@ -144,14 +153,28 @@ export const IronMultiSelectableBehaviorImpl = {
     }
   },
 
-  _toggleSelected: function(value) {
+  _toggleSelected: function(value, metaKey, shiftKey) {
     var i = this.selectedValues.indexOf(value);
     var unselected = i < 0;
-    if (unselected) {
-      this.push('selectedValues', value);
+    const idx = this._valueToIndex(value)
+    if (this.toggleShift && !metaKey && !(shiftKey && (idx === this.latestSelection))) {
+      if (shiftKey && (this.latestSelection || this.latestSelection === 0)) {
+        //Extend latest selection
+        const firstValue = Math.min(idx, this.latestSelection) + (this.latestSelection<idx ? 1 : 0)
+        this.push('selectedValues',...(Array.from({length: Math.abs(idx - this.latestSelection)}, (v, k) => k + firstValue).map(x=>this._indexToValue(x))))
+      } else {
+        this.splice('selectedValues',0,this.selectedValues.length);
+        this.push('selectedValues',value);
+      }
     } else {
-      this.splice('selectedValues', i, 1);
+      if (unselected) {
+        this.push('selectedValues',value);
+      } else {
+        this.splice('selectedValues',i,1);
+      }
     }
+
+    this.latestSelection = idx
   },
 
   _valuesToItems: function(values) {
