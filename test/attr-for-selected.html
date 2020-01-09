@@ -16,15 +16,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 
-  <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
-  <script src="../../web-component-tester/browser.js"></script>
-  <script src="../../test-fixture/test-fixture-mocha.js"></script>
-
-  <link rel="import" href="../../test-fixture/test-fixture.html">
-  <link rel="import" href="../../iron-test-helpers/iron-test-helpers.html">
-
-  <link rel="import" href="../iron-selector.html">
-  <link rel="import" href="attr-for-selected-elements.html">
+  <script src="../node_modules/@webcomponents/webcomponentsjs/webcomponents-bundle.js"></script>
+  <script src="../node_modules/wct-browser-legacy/browser.js"></script>
 
   <style>
     .iron-selected {
@@ -82,19 +75,26 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </template>
   </test-fixture>
 
-  <script>
+  <script type="module">
+    import '@polymer/test-fixture/test-fixture.js';
+    import '@polymer/iron-test-helpers/iron-test-helpers.js';
+    import '../iron-selector.js';
+    import './attr-for-selected-elements.js';
     suite('inline attributes', function() {
       var selector;
       var items;
 
       setup(function(done) {
         selector = fixture('inlineAttributes');
-        items = Array.prototype.slice.apply(selector.querySelectorAll('div[some-attr]'));
+        items = Array.prototype.slice.apply(
+            selector.querySelectorAll('div[some-attr]'));
 
-        selector.addEventListener('iron-items-changed', function onIronItemsChanged() {
-          selector.removeEventListener('iron-items-changed', onIronItemsChanged);
-          done();
-        });
+        selector.addEventListener(
+            'iron-items-changed', function onIronItemsChanged() {
+              selector.removeEventListener(
+                  'iron-items-changed', onIronItemsChanged);
+              done();
+            });
       });
 
       test('selecting value programatically selects correct item', function() {
@@ -108,6 +108,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           done();
         });
       });
+
+      test('setting attr-for-selected to null keeps current selection', function() {
+        selector.select('value0');
+        assert.equal(selector.selectedItem, items[0]);
+        assert.equal(selector.selected, 'value0');
+        selector.attrForSelected = null;
+        assert.equal(selector.selectedItem, items[0]);
+        assert.equal(selector.selected, 0);
+      });
     });
 
     suite('reflected properties as attributes', function() {
@@ -116,15 +125,18 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       setup(function(done) {
         selector = fixture('reflectedProperties');
-        items = Array.prototype.slice.apply(selector.querySelectorAll('attr-reflector'));
+        items = Array.prototype.slice.apply(
+            selector.querySelectorAll('attr-reflector'));
         for (var i = 0; i < items.length; i++) {
-          items[i].someAttr = "value" + i;
+          items[i].someAttr = 'value' + i;
         }
 
-        selector.addEventListener('iron-items-changed', function onIronItemsChanged() {
-          selector.removeEventListener('iron-items-changed', onIronItemsChanged);
-          done();
-        });
+        selector.addEventListener(
+            'iron-items-changed', function onIronItemsChanged() {
+              selector.removeEventListener(
+                  'iron-items-changed', onIronItemsChanged);
+              done();
+            });
       });
 
       test('selecting value programatically selects correct item', function() {
@@ -146,15 +158,18 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       setup(function(done) {
         selector = fixture('mixedPropertiesAndAttributes');
-        items = Array.prototype.slice.apply(selector.querySelectorAll('attr-reflector, div[some-attr]'));
+        items = Array.prototype.slice.apply(
+            selector.querySelectorAll('attr-reflector, div[some-attr]'));
         for (var i = 0; i < items.length; i++) {
-          items[i].someAttr = "value" + i;
+          items[i].someAttr = 'value' + i;
         }
 
-        selector.addEventListener('iron-items-changed', function onIronItemsChanged() {
-          selector.removeEventListener('iron-items-changed', onIronItemsChanged);
-          done();
-        });
+        selector.addEventListener(
+            'iron-items-changed', function onIronItemsChanged() {
+              selector.removeEventListener(
+                  'iron-items-changed', onIronItemsChanged);
+              done();
+            });
       });
 
       test('selecting value programatically selects correct item', function() {
@@ -190,12 +205,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       setup(function(done) {
         selector = fixture('defaultAttribute');
-        items = Array.prototype.slice.apply(selector.querySelectorAll('div[some-attr]'));
+        items = Array.prototype.slice.apply(
+            selector.querySelectorAll('div[some-attr]'));
 
-        selector.addEventListener('iron-items-changed', function onIronItemsChanged() {
-          selector.removeEventListener('iron-items-changed', onIronItemsChanged);
-          done();
-        });
+        selector.addEventListener(
+            'iron-items-changed', function onIronItemsChanged() {
+              selector.removeEventListener(
+                  'iron-items-changed', onIronItemsChanged);
+              done();
+            });
       });
 
       test('setting non-existing value sets default', function() {
@@ -207,7 +225,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       test('setting non-existing value sets default', function() {
         selector.multi = true;
         selector.select('non-existing-value');
-        assert.deepEqual(selector.selectedValues, ['default', 'non-existing-value']);
+        assert.deepEqual(
+            selector.selectedValues, ['default', 'non-existing-value']);
         assert.deepEqual(selector.selectedItems, [items[2]]);
       });
 
@@ -218,16 +237,17 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         assert.deepEqual(selector.selectedItems, [items[0]]);
       });
 
-      test('default element not found does not result in infinite loop', function() {
-        selector.fallbackSelection = 'non-existing-fallback';
-        selector.select('non-existing-value');
-        assert.equal(selector.selectedItem, undefined);
-        selector.multi = true;
-        selector.selectedValues = ['non-existing-value'];
-        assert.deepEqual(selector.selectedItems, []);
-        selector.fallbackSelection = 'default';
-        assert.deepEqual(selector.selectedItems, [items[2]]);
-      });
+      test(
+          'default element not found does not result in infinite loop', function() {
+            selector.fallbackSelection = 'non-existing-fallback';
+            selector.select('non-existing-value');
+            assert.equal(selector.selectedItem, undefined);
+            selector.multi = true;
+            selector.selectedValues = ['non-existing-value'];
+            assert.deepEqual(selector.selectedItems, []);
+            selector.fallbackSelection = 'default';
+            assert.deepEqual(selector.selectedItems, [items[2]]);
+          });
 
       test('selection is updated after fallback is set', function() {
         selector.fallbackSolution = undefined;

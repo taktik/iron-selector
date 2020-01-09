@@ -16,12 +16,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 
-  <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
-  <script src="../../web-component-tester/browser.js"></script>
-  <script src="../../test-fixture/test-fixture-mocha.js"></script>
-
-  <link rel="import" href="../../test-fixture/test-fixture.html">
-  <link rel="import" href="../iron-selector.html">
+  <script src="../node_modules/@webcomponents/webcomponentsjs/webcomponents-bundle.js"></script>
+  <script src="../node_modules/wct-browser-legacy/browser.js"></script>
 
   <style>
     .iron-selected {
@@ -62,10 +58,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </template>
   </test-fixture>
 
-  <script>
+  <script type="module">
+    import '@polymer/test-fixture/test-fixture.js';
+    import '../iron-selector.js';
+
+    import {dom} from '@polymer/polymer/lib/legacy/polymer.dom.js';
+    import {Base} from '@polymer/polymer/polymer-legacy.js';
 
     suite('defaults', function() {
-
       var s1;
 
       setup(function(done) {
@@ -103,7 +103,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     });
 
     suite('basic', function() {
-
       var s2;
 
       setup(function(done) {
@@ -116,7 +115,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       });
 
       test('honors the attrForSelected attribute', function(done) {
-        Polymer.Base.async(function() {
+        Base.async(function() {
           assert.equal(s2.attrForSelected, 'id');
           assert.equal(s2.selected, 'item2');
           assert.equal(s2.selectedItem, document.querySelector('#item2'));
@@ -158,7 +157,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       test('force synchronous item update', function() {
         expect(s2.items.length).to.be.equal(5);
-        Polymer.dom(s2).appendChild(document.createElement('div'));
+        dom(s2).appendChild(document.createElement('div'));
         expect(s2.items.length).to.be.equal(5);
         s2.forceSynchronousItemUpdate();
         expect(s2.items.length).to.be.equal(6);
@@ -221,12 +220,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             assert.notEqual(mutation.removedNodes, undefined);
           });
 
-          Polymer.dom(s2).appendChild(newItem);
+          dom(s2).appendChild(newItem);
 
-          Polymer.Base.async(function() {
-            Polymer.dom(s2).removeChild(newItem);
+          Base.async(function() {
+            dom(s2).removeChild(newItem);
 
-            Polymer.Base.async(function() {
+            Base.async(function() {
               expect(changeCount).to.be.equal(2);
               done();
             }, 1);
@@ -236,20 +235,20 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         test('updates selected item', function(done) {
           s1.selected = 0;
 
-          var firstElementChild = Polymer.dom(s1).firstElementChild;
+          var firstElementChild = dom(s1).firstElementChild;
           expect(firstElementChild).to.be.equal(s1.selectedItem);
           expect(firstElementChild.classList.contains('iron-selected'))
               .to.be.eql(true);
 
           s1.addEventListener('iron-items-changed', function() {
-            firstElementChild = Polymer.dom(s1).firstElementChild;
+            firstElementChild = dom(s1).firstElementChild;
             expect(firstElementChild).to.be.equal(s1.selectedItem);
             expect(firstElementChild.classList.contains('iron-selected'))
                 .to.be.eql(true);
             done();
           });
 
-          Polymer.dom(s1).removeChild(s1.selectedItem);
+          dom(s1).removeChild(s1.selectedItem);
         });
       });
 
@@ -266,19 +265,20 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           // Create and append a new item which should become selected.
           var child = document.createElement('div');
           child.textContent = 'Item 0';
-          Polymer.dom(selector).appendChild(child);
+          dom(selector).appendChild(child);
 
-          selector.addEventListener('iron-items-changed', function onIronItemsChanged() {
-            selector.removeEventListener('iron-items-changed', onIronItemsChanged);
+          selector.addEventListener(
+              'iron-items-changed', function onIronItemsChanged() {
+                selector.removeEventListener(
+                    'iron-items-changed', onIronItemsChanged);
 
-            assert.equal(child.className, 'iron-selected');
-            document.body.removeChild(selector);
-            done();
-          });
+                assert.equal(child.className, 'iron-selected');
+                document.body.removeChild(selector);
+                done();
+              });
         });
       });
     });
-
   </script>
 
 </body>

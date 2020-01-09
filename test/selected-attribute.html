@@ -16,12 +16,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 
-  <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
-  <script src="../../web-component-tester/browser.js"></script>
-  <script src="../../test-fixture/test-fixture-mocha.js"></script>
-
-  <link rel="import" href="../../test-fixture/test-fixture.html">
-  <link rel="import" href="../iron-selector.html">
+  <script src="../node_modules/@webcomponents/webcomponentsjs/webcomponents-bundle.js"></script>
+  <script src="../node_modules/wct-browser-legacy/browser.js"></script>
 
   <style>
     .iron-selected {
@@ -66,10 +62,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </template>
   </test-fixture>
 
-  <script>
-
+  <script type="module">
+    import '@polymer/test-fixture/test-fixture.js';
+    import '../iron-selector.js';
+    import {flush} from '@polymer/polymer/lib/legacy/polymer.dom.js';
     suite('selected attributes', function() {
-
       var s;
 
       setup(function(done) {
@@ -91,11 +88,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         // now selected attribute should be there
         assert.isTrue(s.children[4].hasAttribute('myattr'));
       });
-
     });
 
     suite('changing attrForSelected', function() {
-
       var s;
 
       setup(function(done) {
@@ -108,15 +103,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       });
 
       test('changing selectedAttribute', function() {
-        Polymer.dom.flush();
+        flush();
         s.attrForSelected = 'data-y';
         assert.equal(s.selected, 'y-1');
       });
-
     });
 
     suite('changing attrForSelected in multi', function() {
-
       var s;
 
       setup(function(done) {
@@ -129,15 +122,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       });
 
       test('changing selectedAttribute', function() {
-        Polymer.dom.flush();
+        flush();
         s.attrForSelected = 'data-y';
         assert.equal(s.selectedValues.length, 2);
-        assert.equal(s.selectedValues[0],'y-1');
-        assert.equal(s.selectedValues[1],'y-2');
+        assert.equal(s.selectedValues[0], 'y-1');
+        assert.equal(s.selectedValues[1], 'y-2');
       });
-
     });
-
   </script>
 
 </body>
