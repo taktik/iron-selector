@@ -1,5 +1,7 @@
 *.tgz
 .github
+.idea
+node_modules
 .travis.yml
 formatconfig.json
 gen-tsd.json

@@ -10,7 +10,7 @@
     "url": "git://github.com/taktik/iron-selector.git"
   },
   "homepage": "https://github.com/taktik/iron-selector",
-  "name": "@taktik/iron-selector",
+  "name": "@taktik/iron-selector-meta-shift",
   "license": "BSD-3-Clause",
   "devDependencies": {
     "webmat": "^0.2.0",
